@@ -13,8 +13,20 @@
    <TPOOL>
     <item>
      <ID>I</ID>
+     <KEY>740</KEY>
+     <ENTRY>7.40</ENTRY>
+     <LENGTH>14</LENGTH>
+    </item>
+    <item>
+     <ID>I</ID>
      <KEY>745</KEY>
      <ENTRY>7.40 SP05</ENTRY>
+     <LENGTH>19</LENGTH>
+    </item>
+    <item>
+     <ID>I</ID>
+     <KEY>748</KEY>
+     <ENTRY>7.40 SP08</ENTRY>
      <LENGTH>19</LENGTH>
     </item>
     <item>
@@ -48,6 +60,24 @@
     </item>
     <item>
      <ID>S</ID>
+     <KEY>P_FOR</KEY>
+     <ENTRY>For-Ausdrücke</ENTRY>
+     <LENGTH>21</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>P_INLINE</KEY>
+     <ENTRY>Inline-Deklaration</ENTRY>
+     <LENGTH>26</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>P_ITAB</KEY>
+     <ENTRY>Tabellenausdrücke</ENTRY>
+     <LENGTH>25</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
      <KEY>P_MESH</KEY>
      <ENTRY>MESHES</ENTRY>
      <LENGTH>14</LENGTH>
@@ -57,6 +87,12 @@
      <KEY>P_SEL_UN</KEY>
      <ENTRY>SELECT UNCION</ENTRY>
      <LENGTH>21</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
+     <KEY>P_SW_CO</KEY>
+     <ENTRY>SWITCH und COND</ENTRY>
+     <LENGTH>23</LENGTH>
     </item>
    </TPOOL>
   </asx:values>

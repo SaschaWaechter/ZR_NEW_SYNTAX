@@ -11,6 +11,19 @@ CLASS zcl_new_syntax DEFINITION
     "! Meshes
     "! https://help.sap.com/doc/abapdocu_750_index_htm/7.50/de-de/abenabap_meshes.htm
     METHODS mesh.
+    "! Inline-Deklarationen
+    "! https://blogs.sap.com/2013/05/23/abap-news-for-release-740-inline-declarations/
+    METHODS inline.
+    "! SWITCH und COND
+    "! https://blogs.sap.com/2013/05/28/abap-news-for-release-740-constructor-operators-cond-and-switch/
+    METHODS sw_co.
+    "! Tabellenausdrücke
+    "! https://blogs.sap.com/2013/05/29/abap-news-for-release-740-table-expressions/
+    "! https://blogs.sap.com/2013/06/22/abap-news-for-release-740-new-internal-table-functions/
+    METHODS itab.
+    "! For-Ausdrücke
+    "! https://blogs.sap.com/2014/09/30/abap-news-for-740-sp08-iteration-expressions/
+    METHODS for.
 ENDCLASS.
 
 
@@ -114,6 +127,30 @@ CLASS zcl_new_syntax IMPLEMENTATION.
                             ]\_sflight[ fldate = date
                                           price = price - 10 ] ).
     ENDIF.
+
+  ENDMETHOD.
+
+  METHOD for.
+
+  BREAK-POINT.
+
+  ENDMETHOD.
+
+  METHOD inline.
+
+  BREAK-POINT.
+
+  ENDMETHOD.
+
+  METHOD itab.
+
+  BREAK-POINT.
+
+  ENDMETHOD.
+
+  METHOD sw_co.
+
+  BREAK-POINT.
 
   ENDMETHOD.
 
