@@ -1,3 +1,4 @@
+[![lint](https://github.com/SaschaWaechter/ZR_NEW_SYNTAX/actions/workflows/lint.yml/badge.svg)](https://github.com/SaschaWaechter/ZR_NEW_SYNTAX/actions/workflows/lint.yml)
 # ZR_NEW_SYNTAX
 Neue Syntax ab ABAP 7.40
 
