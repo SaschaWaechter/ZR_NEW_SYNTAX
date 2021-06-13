@@ -42,6 +42,12 @@
     </item>
     <item>
      <ID>S</ID>
+     <KEY>P_CONV</KEY>
+     <ENTRY>CONV</ENTRY>
+     <LENGTH>12</LENGTH>
+    </item>
+    <item>
+     <ID>S</ID>
      <KEY>P_CORR</KEY>
      <ENTRY>CORRESPONDING Operator</ENTRY>
      <LENGTH>30</LENGTH>
