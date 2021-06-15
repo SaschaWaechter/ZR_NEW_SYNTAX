@@ -24,6 +24,19 @@ CLASS zcl_new_syntax DEFINITION
     "! For-Ausdrücke
     "! https://blogs.sap.com/2014/09/30/abap-news-for-740-sp08-iteration-expressions/
     METHODS for.
+    "! SELECT UNION
+    "! https://blogs.sap.com/2015/11/09/abap-news-for-release-750-select-union/
+    METHODS sel_un.
+    "! Dynamischer RFC-Aufruf
+    "! https://blogs.sap.com/2015/11/27/abap-news-for-release-750-dynamic-rfc-destinations/
+    METHODS dynrfc.
+    "! Corresponding
+    "! https://blogs.sap.com/2014/02/06/abap-news-for-release-740-sp05/
+    METHODS corr.
+    "! Conv
+    "! https://abap-workbench.de/index.php/what-s-new/abap-740/item/35-conversion-operator-conv
+    METHODS conv.
+    
     CLASS-METHODS output
         EXPORTING
             e_par1 TYPE String
@@ -139,7 +152,7 @@ CLASS zcl_new_syntax IMPLEMENTATION.
 
   METHOD for.
 
-  BREAK-POINT.
+    BREAK-POINT.
 
   "FOR zum Erstellen von internen Tabellen
 
@@ -197,7 +210,7 @@ CLASS zcl_new_syntax IMPLEMENTATION.
 
   METHOD inline.
 
-  BREAK-POINT.
+    BREAK-POINT.
 
   "lokale Variablen deklarieren (wie bisher)
   DATA:
@@ -308,7 +321,7 @@ CLASS zcl_new_syntax IMPLEMENTATION.
 
   METHOD itab.
 
-  BREAK-POINT.
+    BREAK-POINT.
 
   "Aufbau der internen Tabelle festlegen
   TYPES: BEGIN OF itab_struc,
@@ -367,8 +380,8 @@ CLASS zcl_new_syntax IMPLEMENTATION.
 
   METHOD sw_co.
 
-  BREAK-POINT.
-
+    BREAK-POINT.
+    
   "COND --> Wert der Variable lv_resultCo ist abhängig von logischen Ausdrücken
   DATA(o_randomNumber) = cl_abap_random_int=>CREATE(
                            SEED = cl_abap_random=>seed( )
@@ -376,26 +389,6 @@ CLASS zcl_new_syntax IMPLEMENTATION.
                            MAX  = 3
                          )->GET_NEXT( ).
   .
-
-*  DATA lv_randomChar TYPE String.
-
-*  CALL FUNCTION 'GENERAL_GET_RANDOM_STRING'
-*    exporting
-*      NUMBER_CHARS  = 1
-*    importing
-*      RANDOM_STRING = lv_randomChar
-*    .
-
-*    DATA(lv_resultCo) =
-*        COND #(
-*            WHEN lv_randomChar = 'A'
-*                THEN 'lv_resultCo = A'
-*            WHEN lv_randomChar = 'B'
-*                THEN 'lv_resultCo = B'
-*            WHEN lv_randomChar = 'C'
-*                THEN 'lv_resultCo = C'
-*            ELSE 'lv_resultCo = anderer'
-*        ).
 
     DATA(lv_resultCo) =
         COND #(
@@ -423,17 +416,85 @@ CLASS zcl_new_syntax IMPLEMENTATION.
                 THEN 'lv_resultSw > 2'
     ).
 
-*  DATA lv_resultSw2 TYPE String.
-*  lv_resultSw2 =
-*    SWITCH #(
-*        lv_randomChar
-*            WHEN 'A' OR 'E' OR 'I' OR 'O' OR 'U'
-*                THEN 'Vokal'
-*            ELSE 'Konsonant'
-*    ).
-
     WRITE: / lv_resultSw.
 
+  ENDMETHOD.
+
+  METHOD dynrfc.
+
+    BREAK-POINT.
+
+  ENDMETHOD.
+
+  METHOD sel_un.
+
+    BREAK-POINT.
+
+  ENDMETHOD.
+
+  METHOD corr.
+
+    TYPES:
+      BEGIN OF ty_flight,
+        carrid   TYPE spfli-carrid,
+        connid   TYPE spfli-connid,
+        cityfrom TYPE spfli-cityfrom,
+        cityto   TYPE spfli-cityto,
+      END OF ty_flight.
+    TYPES tty_flights TYPE SORTED TABLE OF ty_flight WITH UNIQUE KEY carrid connid.
+    DATA lt_flights TYPE tty_flights.
+
+    BREAK-POINT.
+
+    SELECT *
+           FROM spfli
+           INTO TABLE @DATA(lt_spfli).
+
+
+    MOVE-CORRESPONDING lt_spfli TO lt_flights.
+    "Alternativ
+    DATA(lt_flights_alt) = CORRESPONDING tty_flights( lt_spfli ).
+
+
+    TYPES:
+      BEGIN OF ls_1,
+        matnr TYPE matnr,
+        mng   TYPE i,
+        flag  TYPE abap_bool,
+      END OF ls_1,
+      BEGIN OF ls_2,
+        matnr TYPE matnr,
+        menge TYPE i,
+      END OF ls_2.
+
+    DATA ls_dst TYPE ls_1.
+    DATA ls_src TYPE ls_2.
+
+    ls_src-matnr = 'ABCD'.
+    ls_src-menge = 100.
+
+    ls_dst = CORRESPONDING #( ls_src MAPPING mng = menge ).
+
+    ls_dst = VALUE #( BASE CORRESPONDING #( ls_src MAPPING mng = menge ) flag = 'X' ).
+
+    ls_dst = VALUE #( BASE CORRESPONDING #(
+            ls_src MAPPING mng = menge )
+            flag = COND #(
+                    WHEN ls_src-menge > 0 THEN 'H'
+                    WHEN ls_src-menge < 0 THEN 'S'
+                    ELSE 'X' )  ).
+
+  ENDMETHOD.
+
+  METHOD conv.
+
+    DATA lv_text TYPE c LENGTH 255.
+
+    BREAK-POINT.
+
+    DATA(lv_xstr) = cl_abap_codepage=>convert_to( source = CONV string( lv_text ) ).
+    lv_xstr = cl_abap_codepage=>convert_to( source = CONV #( lv_text ) ).
+    
   ENDMETHOD.
 
 ENDCLASS.

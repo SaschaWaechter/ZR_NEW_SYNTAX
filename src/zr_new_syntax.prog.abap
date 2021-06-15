@@ -16,6 +16,8 @@ SELECTION-SCREEN BEGIN OF BLOCK rel_740 WITH FRAME TITLE TEXT-740.
   PARAMETERS p_sw_co AS CHECKBOX.
   "Interne Tabellen
   PARAMETERS p_itab AS CHECKBOX.
+  "Conv
+  PARAMETERS p_conv AS CHECKBOX.
 SELECTION-SCREEN END OF BLOCK rel_740.
 
 SELECTION-SCREEN BEGIN OF BLOCK rel_740_5 WITH FRAME TITLE TEXT-745.
@@ -52,4 +54,4 @@ CALL FUNCTION 'RS_REFRESH_FROM_SELECTOPTIONS'
 LOOP AT lt_seltab ASSIGNING FIELD-SYMBOL(<ls_seltab>) WHERE low = abap_true.
   lt_method_calls = VALUE stringtab( BASE lt_method_calls ( |{ <ls_seltab>-selname+2 }| ) ).
 ENDLOOP.
-NEW zcl_new_syntax( lt_method_Calls ).
+NEW zcl_new_syntax( lt_method_calls ).
