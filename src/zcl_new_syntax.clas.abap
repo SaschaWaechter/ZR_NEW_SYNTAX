@@ -36,6 +36,12 @@ CLASS zcl_new_syntax DEFINITION
     "! Conv
     "! https://abap-workbench.de/index.php/what-s-new/abap-740/item/35-conversion-operator-conv
     METHODS conv.
+    
+    CLASS-METHODS output
+        EXPORTING
+            e_par1 TYPE String
+            e_par2 TYPE String
+    .
 ENDCLASS.
 
 
@@ -142,27 +148,275 @@ CLASS zcl_new_syntax IMPLEMENTATION.
 
   ENDMETHOD.
 
+
+
   METHOD for.
 
     BREAK-POINT.
 
+  "FOR zum Erstellen von internen Tabellen
+
+  "Struktur der internen Tabelle festlegen
+  TYPES: BEGIN OF struc,
+         lv_quadrat TYPE i,
+  END OF struc.
+
+  "Tabellentyp festlegen
+  TYPES itab_type TYPE STANDARD TABLE OF struc.
+
+  "interne Tabelle deklarieren
+  DATA itab TYPE itab_type.
+
+  "interne Tabelle füllen --> bei VALUE ist FOR optional
+  itab =
+    VALUE #(
+        "i startet mit dem Wert 1, wird bei jedem Schritt verdoppelt und läuft solange weiter, bis i > 150
+        FOR i = 1 THEN i + i UNTIL i > 150 (
+            "bei jedem Durchlauf wird itab eine Zeile in der Spalte lv_quadrat hinzugefügt und mit dem Wert von i belegt
+            lv_quadrat = i
+        )
+    ).
+
+
+
+  "FOR zum Reduzieren bzw. Durchiterieren von internen Tabellen
+
+  "interne Tabelle deklarieren
+  DATA itab2 TYPE STANDARD TABLE OF i.
+
+  "interne Tabelle füllen mit den Werten 1 bis 10
+  itab2 =
+    VALUE #(
+        FOR i = 1
+            WHILE i <= 10 ( i )
+    ).
+
+  "Einträge aus zweiter Tabelle aufsummieren --> bei REDUCE ist FOR ein MUSS
+  DATA(lv_sum) =
+    REDUCE
+        #(
+            "i startet mit dem Wert 0
+            INIT i = 0
+            "der aktuelle Eintrag in der entsprechenden Zeile von itab2 wird zwischengespeichert in der Workarea
+            FOR lv_workarea_itab
+            IN itab2
+            "in jedem Schritt wird i um den in der Workarea gespeicherten Wert erhöht
+            NEXT i = i + lv_workarea_itab
+        ).
+
   ENDMETHOD.
+
+
 
   METHOD inline.
 
     BREAK-POINT.
 
+  "lokale Variablen deklarieren (wie bisher)
+  DATA:
+          lv_firstName TYPE c LENGTH 10,
+          lv_surname TYPE String.
+
+  "lokale Variablen initialisieren (wie bisher)
+  lv_firstname = 'Peter'.
+  lv_surname = 'Meier'.
+
+  "Deklaration & Initialisierung in einem Schritt (neu) --> Datentyp & Länge werden automatisch zur Laufzeit bestimmt
+  DATA(lv_firstName2) = 'Peter'.
+  DATA(lv_surname2) = 'Meier'.
+
+
+
+  "Aufbau der internen Tabelle festlegen
+  TYPES: BEGIN OF itab_struc,
+         lv_brand TYPE String,
+         lv_operatingSystem TYPE String,
+         lv_processor TYPE String,
+         lv_graphicsCard TYPE String,
+         lv_memorySize TYPE i,
+         lv_color TYPE c LENGTH 3,
+         lv_price TYPE f,
+         END OF itab_struc.
+
+  "Tabellentyp festlegen
+  TYPES itab_type TYPE STANDARD TABLE OF itab_struc.
+
+  "interne Tabelle deklarieren
+  DATA itab TYPE itab_type.
+
+  itab =
+    VALUE #(
+    ( lv_brand = 'Lenovo' lv_operatingSystem = 'Windows 10' lv_processor = 'Intel Core i7' lv_graphicsCard = 'andere' lv_memorySize = 512 lv_color = 'BLA' lv_price = '1045.15' )
+    ( lv_brand = 'Acer' lv_operatingSystem = 'Chrome OS' lv_processor = 'Intel Celeron N400' lv_graphicsCard = 'UHD Graphics 600' lv_color = 'GRE' lv_price = '347.90' )
+    ( lv_brand = 'ASUS' lv_operatingSystem = 'Windows 10 Home' lv_processor = 'Intel Core i7' lv_graphicsCard = 'UHD Graphics 630' lv_memorySize = 256 lv_color = 'BLA' lv_price = '2601.53' )
+    ( lv_brand = 'Lenovo' lv_operatingSystem = 'Windows 10 Pro' lv_processor = 'Intel Core i3' lv_graphicsCard = 'andere' lv_memorySize = 512 lv_color = 'RED' lv_price = '499.00' )
+    ).
+
+  "Workarea deklarieren (wie bisher)
+  DATA lv_workarea_itab TYPE itab_struc.
+
+  "über interne Tabelle loopen mit vorhandener Workarea (wie bisher)
+  LOOP AT itab INTO lv_workarea_itab.
+    WRITE: / 'Loop successful'.
+  ENDLOOP.
+
+  "zweite interne Tabelle anlegen (neu)
+  DATA(itab2) = itab.
+
+  "über zweite interne Tabelle loopen (neu)
+  LOOP AT itab2 INTO DATA(lv_workarea_itab2).
+    WRITE: / 'Loop 2 successful'.
+  ENDLOOP.
+
+  LOOP AT itab2 ASSIGNING FIELD-SYMBOL(<lv_fieldSymbol>).
+    WRITE: / 'Loop 3 successful'.
+  ENDLOOP.
+
+
+
+  "Parameter deklarieren
+  DATA lv_par1 TYPE String.
+  DATA lv_par2 TYPE String.
+
+  "Methode aufrufen & zuvor deklarierte Parameter übergeben (wie bisher)
+  zcl_new_syntax=>OUTPUT(
+    importing
+      E_PAR1 = lv_par1
+      E_PAR2 = lv_par2
+  ).
+
+  WRITE: / lv_par1, lv_par2, '(gewohnter Methodenaufruf)'.
+
+  "Methode nochmal aufrufen mit Inline-Deklaration (neu) --> NICHT BEI GENERISCHEN DATENTYPEN
+  zcl_new_syntax=>OUTPUT(
+    importing
+      E_PAR1 = DATA(lv_param1)
+      E_PAR2 = DATA(lv_param2)
+  ).
+
+  WRITE: / lv_param1, lv_param2, '(neuer Methodenaufruf)'.
+
+  "zugehörige statische Methode output
+*  CLASS-METHODS output
+*        EXPORTING
+*            e_par1 TYPE String
+*            e_par2 TYPE String
+*    .
+
+*  Method output.
+*    e_par1 = 'method call '.
+*    e_par2 = 'was successful'.
+*  ENDMETHOD.
+
   ENDMETHOD.
+
+
+
+  Method output.
+    e_par1 = 'method call '.
+    e_par2 = 'was successful'.
+  ENDMETHOD.
+
+
 
   METHOD itab.
 
     BREAK-POINT.
 
+  "Aufbau der internen Tabelle festlegen
+  TYPES: BEGIN OF itab_struc,
+         lv_brand TYPE String,
+         lv_operatingSystem TYPE String,
+         lv_processor TYPE String,
+         lv_graphicsCard TYPE String,
+         lv_memorySize TYPE i,
+         lv_color TYPE c LENGTH 3,
+         lv_price TYPE f,
+         END OF itab_struc.
+
+  "Tabellentyp festlegen
+  TYPES itab_type TYPE STANDARD TABLE OF itab_struc.
+
+  "interne Tabelle deklarieren
+  DATA itab TYPE itab_type.
+
+  "interne Tabelle füllen
+  itab =
+    VALUE #(
+    ( lv_brand = 'Lenovo' lv_operatingSystem = 'Windows 10' lv_processor = 'Intel Core i7' lv_graphicsCard = 'andere' lv_memorySize = 512 lv_color = 'BLA' lv_price = '1045.15' )
+    ( lv_brand = 'Acer' lv_operatingSystem = 'Chrome OS' lv_processor = 'Intel Celeron N400' lv_graphicsCard = 'UHD Graphics 600' lv_color = 'GRE' lv_price = '347.90' )
+    ( lv_brand = 'ASUS' lv_operatingSystem = 'Windows 10 Home' lv_processor = 'Intel Core i7' lv_graphicsCard = 'UHD Graphics 630' lv_memorySize = 256 lv_color = 'BLA' lv_price = '2601.53' )
+    ( lv_brand = 'Lenovo' lv_operatingSystem = 'Windows 10 Pro' lv_processor = 'Intel Core i3' lv_graphicsCard = 'andere' lv_memorySize = 512 lv_color = 'RED' lv_price = '499.00' )
+    ).
+
+  "Workarea deklarieren
+  DATA lv_workarea_itab TYPE itab_struc.
+
+  "interne Tabelle an der Stelle Index = 3 lesen (wie bisher)
+  READ TABLE itab INDEX 3 INTO lv_workarea_itab.
+
+  IF sy-subrc = 0.
+    DATA(lv_tab) = lv_workarea_itab.
+    WRITE: / 'READ statement succeed / Index 3'.
+  ENDIF.
+
+  "interne Tabelle an der Stelle Index = 1 lesen (neu)
+  lv_workarea_itab = itab[ 1 ].
+
+  IF sy-subrc = 0.
+    DATA(lv_tab2) = lv_workarea_itab.
+    WRITE: / 'READ statement succeed / Index 1'.
+  ENDIF.
+
+  "Index der Zeile mit dem Laptop der Marke Acer
+  DATA(lv_index) = line_index( itab[ lv_brand = 'Acer' ] ).
+
+*  CLEAR sy-lsind.
+*  sy-lsind = 0.
+
   ENDMETHOD.
+
+
 
   METHOD sw_co.
 
     BREAK-POINT.
+    
+  "COND --> Wert der Variable lv_resultCo ist abhängig von logischen Ausdrücken
+  DATA(o_randomNumber) = cl_abap_random_int=>CREATE(
+                           SEED = cl_abap_random=>seed( )
+                           MIN  = 1
+                           MAX  = 3
+                         )->GET_NEXT( ).
+  .
+
+    DATA(lv_resultCo) =
+        COND #(
+            WHEN o_randomNumber = 1
+                THEN 'lv_resultCo = 1'
+            WHEN o_randomnumber = 2
+                THEN 'lv_resultCo = 2'
+            WHEN o_randomNumber = 3
+                THEN 'lv_resultCo = 3'
+    ).
+
+    WRITE: / lv_resultCo.
+
+
+
+  "SWITCH --> Fallunterscheidung
+  DATA(lv_resultSw) =
+    SWITCH #(
+        o_randomNumber
+            WHEN 1
+                THEN 'lv_resultSw < 2'
+            WHEN 2
+                THEN 'lv_resultSw = 2'
+            WHEN 3
+                THEN 'lv_resultSw > 2'
+    ).
+
+    WRITE: / lv_resultSw.
 
   ENDMETHOD.
 
@@ -200,7 +454,6 @@ CLASS zcl_new_syntax IMPLEMENTATION.
     MOVE-CORRESPONDING lt_spfli TO lt_flights.
     "Alternativ
     DATA(lt_flights_alt) = CORRESPONDING tty_flights( lt_spfli ).
-
 
 
     TYPES:
@@ -241,7 +494,7 @@ CLASS zcl_new_syntax IMPLEMENTATION.
 
     DATA(lv_xstr) = cl_abap_codepage=>convert_to( source = CONV string( lv_text ) ).
     lv_xstr = cl_abap_codepage=>convert_to( source = CONV #( lv_text ) ).
-
+    
   ENDMETHOD.
 
 ENDCLASS.
